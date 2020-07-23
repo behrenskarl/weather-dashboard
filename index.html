@@ -15,10 +15,10 @@
     <div class="container">
 
         <!--search bar-->
-        <form id="location-form">
-            <input type="text" id="user-input" placeholder="Search.." name="search">
-            <button type="submit"><i class="fa fa-search"></i></button>
-        </form>
+
+        <input type="text" id="user-input" placeholder="Search.." name="search">
+        <button type="submit" id="user-submit"><i class="fa fa-search"></i></button>
+
 
         <!--div tags for the API info to be displayed to-->
         <div class="jumbotron">
@@ -89,57 +89,78 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!--API for Weather App-->
         <script type="text/javascript">
-            var userInput = $("#user-input").val().trim();
-            
-            function displayWeather() {
-                
+
+            $("#user-submit").click(function () {
+
+                var userInput = $("#user-input")
+                    .val()
+                    .trim();
+                if (userInput.length === 0) {
+                    console.log("Nothing in input!");
+                    return;
+                }
+
                 var APIKey = "bc008bac3394c3179b12d844fcba2049";
-                var queryURL = "http://api.openweathermap.org/data/2.5/forecast?" + "q=" + userInput + "&APPID=" + APIKey;
+
+                var queryURL = "http://api.openweathermap.org/data/2.5/forecast?" +
+                    "q=" +
+                    userInput +
+                    "&APPID=" +
+                    APIKey;
+
                 console.log(queryURL);
                 console.log(userInput);
                 $.ajax({
                     url: queryURL,
                     method: "GET"
                 })
-                    // We store all of the retrieved data inside of an object called "response"
                     .then(function (response) {
-
-                        // Log the queryURL
+                        
                         console.log(queryURL);
-
-                        // Log the resulting object
                         console.log(response);
+                        
+                        var uvQueryURL = "http://api.openweathermap.org/data/2.5/uvi?appId="
+                            + APIKey
+                            + "&lat="
+                            + response.city.coord.lat
+                            + "&lon="
+                            + response.city.coord.lon;
 
-                        // Transfer content to HTML
-                        $(".city").html("<h1>" + response.name + " Weather Details</h1>");
-                        $(".date").text(response.date);
-                        $(".wind").text("Wind Speed: " + response.wind.speed);
-                        $(".humidity").text("Humidity: " + response.main.humidity);
-                        $(".uv-index").text("UV Index: " + response.main.uv-index);
+                            $.ajax({
+                                url: uvQueryURL,
+                                method: "GET"
+                            })
+                                .then(function (response2) {
+                                    var uvIndex = response2.value
+                                    
+                                    console.log(response2);
+                                // });
+                                    // Transfer content to HTML
+                                    $(".city").html("<h2>" + response.city.name + " " + response.list[0].dt_txt + "</h2>");
+                                    $(".date").text(response.dt_text);
+                                    $(".wind").text("Wind Speed: " + response.list[0].wind.speed + " MPH");
+                                    $(".humidity").text("Humidity: " + response.list[0].main.humidity);
+                                    $(".uv-index").text("UV Index: " + uvIndex);
+                                    var tempF = convertToFarenheit(response.list[0].main.temp);
+                                    $(".tempF").text("Temperature: " + tempF.toFixed(2) + "(F)");
 
-                        // Convert the temp to fahrenheit
-                        var tempF = (response.main.temp - 273.15) * 1.80 + 32;
-
-                        // add temp content to html
-                        $(".temp").text("Temperature (K) " + response.main.temp);
-                        $(".tempF").text("Temperature (F) " + tempF.toFixed(2));
-
-                        // Log the data in the console as well
-                        console.log("Wind Speed: " + response.wind.speed);
-                        console.log("Humidity: " + response.main.humidity);
-                        console.log("Temperature (F): " + tempF);
-                        console.log("Date: " + response.date);
-                        console.log("UV Index: " + response.main.uv-index);
+                                    // Log the data in the console as well
+                                    console.log("Wind Speed: " + response.wind.speed + " MPH");
+                                    console.log("Humidity: " + response.main.humidity);
+                                    console.log("Temperature: " + tempF);
+                                    console.log("Date: " + response.date);
+                                    console.log("UV Index: " + uvIndex);
+                                });
                     });
-            }
-            $(".fa fa-search").on("click", function(event) {
-                event.preventDefault();
-
-                displayWeather();
-
             });
-            
-            
+            function convertToFarenheit(temp) {
+                    return (temp - 273.15) * 1.8 + 32;
+            }
+
+
+
+
+
 
 
 
