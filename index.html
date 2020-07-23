@@ -24,6 +24,7 @@
         <div class="jumbotron">
             <div class="city"></div>
             <div class="date"></div>
+            <div class="icon-w"></div>
             <div class="wind"></div>
             <div class="humidity"></div>
             <div class="tempF"></div>
@@ -35,7 +36,7 @@
             <div class="col mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="date-1">Card title</h5>
+                        <h5 class="date-1"></h5>
                         <div class="icon-d1"></div>
                         <div class="humidity-d1"></div>
                         <div class="temp-d1"></div>
@@ -45,7 +46,7 @@
             <div class="col mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="date-2">Card title</h5>
+                        <h5 class="date-2"></h5>
                         <div class="icon-d2"></div>
                         <div class="humidity-d2"></div>
                         <div class="temp-d2"></div>
@@ -55,7 +56,7 @@
             <div class="col mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="date-3">Card title</h5>
+                        <h5 class="date-3"></h5>
                         <div class="icon-d3"></div>
                         <div class="humidity-d3"></div>
                         <div class="temp-d3"></div>
@@ -65,7 +66,7 @@
             <div class="col mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="date-4">Card title</h5>
+                        <h5 class="date-4"></h5>
                         <div class="icon-d4"></div>
                         <div class="humidity-d4"></div>
                         <div class="temp-d4"></div>
@@ -75,7 +76,7 @@
             <div class="col mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="date-5">Card title</h5>
+                        <h5 class="date-5"></h5>
                         <div class="icon-d5"></div>
                         <div class="humidity-d5"></div>
                         <div class="temp-d5"></div>
@@ -99,77 +100,198 @@
                     console.log("Nothing in input!");
                     return;
                 }
-
+                //Weather API
                 var APIKey = "bc008bac3394c3179b12d844fcba2049";
-
-                var queryURL = "http://api.openweathermap.org/data/2.5/forecast?" +
+                var weatherURL = "http://api.openweathermap.org/data/2.5/weather?" +
                     "q=" +
                     userInput +
                     "&APPID=" +
                     APIKey;
-
-                console.log(queryURL);
-                console.log(userInput);
                 $.ajax({
-                    url: queryURL,
+                    url: weatherURL,
                     method: "GET"
                 })
-                    .then(function (response) {
-                        
-                        console.log(queryURL);
-                        console.log(response);
-                        
-                        var uvQueryURL = "http://api.openweathermap.org/data/2.5/uvi?appId="
-                            + APIKey
-                            + "&lat="
-                            + response.city.coord.lat
-                            + "&lon="
-                            + response.city.coord.lon;
+                    .then(function (weatherRes) {
+                        console.log(weatherURL);
+                        console.log(weatherRes);
+                        //Forecast API
+                        var forecastURL = "http://api.openweathermap.org/data/2.5/forecast?" +
+                            "q=" +
+                            userInput +
+                            "&APPID=" +
+                            APIKey;
 
-                            $.ajax({
-                                url: uvQueryURL,
-                                method: "GET"
-                            })
-                                .then(function (response2) {
-                                    var uvIndex = response2.value
-                                    
-                                    console.log(response2);
-                                // });
-                                    // Transfer content to HTML
-                                    $(".city").html("<h2>" + response.city.name + " " + response.list[0].dt_txt + "</h2>");
-                                    $(".date").text(response.dt_text);
-                                    $(".wind").text("Wind Speed: " + response.list[0].wind.speed + " MPH");
-                                    $(".humidity").text("Humidity: " + response.list[0].main.humidity);
-                                    $(".uv-index").text("UV Index: " + uvIndex);
-                                    var tempF = convertToFarenheit(response.list[0].main.temp);
-                                    $(".tempF").text("Temperature: " + tempF.toFixed(2) + "(F)");
+                        console.log(forecastURL);
+                        console.log(userInput);
+                        $.ajax({
+                            url: forecastURL,
+                            method: "GET"
+                        })
+                            .then(function (forecastRes) {
 
-                                    // Log the data in the console as well
-                                    console.log("Wind Speed: " + response.wind.speed + " MPH");
-                                    console.log("Humidity: " + response.main.humidity);
-                                    console.log("Temperature: " + tempF);
-                                    console.log("Date: " + response.date);
-                                    console.log("UV Index: " + uvIndex);
-                                });
-                    });
+                                
+                                console.log(forecastRes);
+                                //UV API
+                                var uvQueryURL = "http://api.openweathermap.org/data/2.5/uvi?appId="
+                                    + APIKey
+                                    + "&lat="
+                                    + forecastRes.city.coord.lat
+                                    + "&lon="
+                                    + forecastRes.city.coord.lon;
+
+                                $.ajax({
+                                    url: uvQueryURL,
+                                    method: "GET"
+                                })
+                                    .then(function (uvRes) {
+                                        var uvIndex = uvRes.value
+
+                                        console.log(uvRes);
+
+                                        //Time Converter for the UT data from Weather API
+                                        var dtUNIX = weatherRes.dt;
+                                        function timeConverter(dtUNIX) {
+                                            var a = new Date(dtUNIX * 1000);
+                                            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                                            var year = a.getFullYear();
+                                            var month = months[a.getMonth()];
+                                            var date = a.getDate();
+                                            var hour = a.getHours();
+                                            var min = a.getMinutes();
+                                            var sec = a.getSeconds();
+                                            var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+                                            return time;
+                                        }
+                                        // API data into the Jumbotron 
+                                        $(".city").html("<h2>" + 
+                                            weatherRes.name + 
+                                            " " + 
+                                            timeConverter(dtUNIX) + 
+                                            "</h2>");
+
+                                        $(".icon-w").html("<img src=http://openweathermap.org/img/w/" + 
+                                        weatherRes.weather[0].icon + 
+                                        ".png" + 
+                                        ">");    
+
+                                        $(".wind").text("Wind Speed: " + 
+                                            weatherRes.wind.speed + 
+                                            " MPH");
+
+                                        $(".humidity").text("Humidity: " + 
+                                            weatherRes.main.humidity + 
+                                            "%");
+
+                                        $(".uv-index").text("UV Index: " + 
+                                            uvIndex);
+
+                                        var tempF = convertToFarenheit(weatherRes.main.temp);
+                                        
+                                        $(".tempF").text("Temperature: " + 
+                                            tempF.toFixed(2) + 
+                                            "(F)");
+                                        
+                                        //five day forecast cards
+
+                                        //day 1
+                                        $(".date-1").text(forecastRes.list[2].dt_txt);
+
+                                        $(".icon-d1").html("<img src=http://openweathermap.org/img/w/" + 
+                                            forecastRes.list[2].weather[0].icon + 
+                                            ".png" + 
+                                            ">");
+
+                                        $(".humidity-d1").text("Humidity: " + 
+                                            forecastRes.list[2].main.humidity + 
+                                            "%");
+
+                                        var d1Temp = convertToFarenheit(forecastRes.list[2].main.temp);
+
+                                        $(".temp-d1").text("Temp: " + 
+                                            d1Temp.toFixed(2) + 
+                                            "(F)");
+
+                                        //day 2
+                                        $(".date-2").text(forecastRes.list[10].dt_txt);
+
+                                        $(".icon-d2").html("<img src=http://openweathermap.org/img/w/" + 
+                                            forecastRes.list[10].weather[0].icon + 
+                                            ".png" + 
+                                            ">");
+
+                                        $(".humidity-d2").text("Humidity: " + 
+                                            forecastRes.list[10].main.humidity + 
+                                            "%");
+
+                                        var d1Temp = convertToFarenheit(forecastRes.list[10].main.temp);
+
+                                        $(".temp-d2").text("Temp: " + 
+                                            d1Temp.toFixed(2) + 
+                                            "(F)");
+
+                                        //day 3
+                                        $(".date-3").text(forecastRes.list[18].dt_txt);
+
+                                        $(".icon-d3").html("<img src=http://openweathermap.org/img/w/" + 
+                                            forecastRes.list[18].weather[0].icon + 
+                                            ".png" + 
+                                            ">");
+
+                                        $(".humidity-d3").text("Humidity: " + 
+                                            forecastRes.list[18].main.humidity + 
+                                            "%");
+
+                                        var d1Temp = convertToFarenheit(forecastRes.list[18].main.temp);
+
+                                        $(".temp-d3").text("Temp: " + 
+                                            d1Temp.toFixed(2) + 
+                                            "(F)");
+
+                                        //day 4
+                                        $(".date-4").text(forecastRes.list[26].dt_txt);
+
+                                        $(".icon-d4").html("<img src=http://openweathermap.org/img/w/" + 
+                                            forecastRes.list[26].weather[0].icon + 
+                                            ".png" + 
+                                            ">");
+
+                                        $(".humidity-d4").text("Humidity: " + 
+                                            forecastRes.list[26].main.humidity + 
+                                            "%");
+
+                                        var d1Temp = convertToFarenheit(forecastRes.list[26].main.temp);
+
+                                        $(".temp-d4").text("Temp: " +
+                                            d1Temp.toFixed(2) + 
+                                            "(F)");
+
+                                        //day 5
+                                        $(".date-5").text(forecastRes.list[34].dt_txt);
+
+                                        $(".icon-d5").html("<img src=http://openweathermap.org/img/w/" + 
+                                            forecastRes.list[34].weather[0].icon + 
+                                            ".png" + 
+                                            ">");
+
+                                        $(".humidity-d5").text("Humidity: " + 
+                                            forecastRes.list[34].main.humidity + 
+                                            "%");
+
+                                        var d1Temp = convertToFarenheit(forecastRes.list[34].main.temp);
+                                        
+                                        $(".temp-d5").text("Temp: " + 
+                                            d1Temp.toFixed(2) + 
+                                            "(F)");
+
+
+                                    });
+                            });
+                    })
+
             });
             function convertToFarenheit(temp) {
-                    return (temp - 273.15) * 1.8 + 32;
+                return (temp - 273.15) * 1.8 + 32;
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         </script>
     </div>
