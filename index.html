@@ -102,7 +102,7 @@
                 }
                 //Weather API
                 var APIKey = "bc008bac3394c3179b12d844fcba2049";
-                var weatherURL = "http://api.openweathermap.org/data/2.5/weather?" +
+                var weatherURL = "https://api.openweathermap.org/data/2.5/weather?" +
                     "q=" +
                     userInput +
                     "&APPID=" +
@@ -115,7 +115,7 @@
                         console.log(weatherURL);
                         console.log(weatherRes);
                         //Forecast API
-                        var forecastURL = "http://api.openweathermap.org/data/2.5/forecast?" +
+                        var forecastURL = "https://api.openweathermap.org/data/2.5/forecast?" +
                             "q=" +
                             userInput +
                             "&APPID=" +
@@ -132,7 +132,7 @@
                                 
                                 console.log(forecastRes);
                                 //UV API
-                                var uvQueryURL = "http://api.openweathermap.org/data/2.5/uvi?appId="
+                                var uvQueryURL = "https://api.openweathermap.org/data/2.5/uvi?appId="
                                     + APIKey
                                     + "&lat="
                                     + forecastRes.city.coord.lat
@@ -169,7 +169,7 @@
                                             timeConverter(dtUNIX) + 
                                             "</h2>");
 
-                                        $(".icon-w").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-w").html("<img src=https://openweathermap.org/img/w/" + 
                                         weatherRes.weather[0].icon + 
                                         ".png" + 
                                         ">");    
@@ -196,7 +196,7 @@
                                         //day 1
                                         $(".date-1").text(forecastRes.list[2].dt_txt);
 
-                                        $(".icon-d1").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-d1").html("<img src=https://openweathermap.org/img/w/" + 
                                             forecastRes.list[2].weather[0].icon + 
                                             ".png" + 
                                             ">");
@@ -214,7 +214,7 @@
                                         //day 2
                                         $(".date-2").text(forecastRes.list[10].dt_txt);
 
-                                        $(".icon-d2").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-d2").html("<img src=https://openweathermap.org/img/w/" + 
                                             forecastRes.list[10].weather[0].icon + 
                                             ".png" + 
                                             ">");
@@ -232,7 +232,7 @@
                                         //day 3
                                         $(".date-3").text(forecastRes.list[18].dt_txt);
 
-                                        $(".icon-d3").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-d3").html("<img src=https://openweathermap.org/img/w/" + 
                                             forecastRes.list[18].weather[0].icon + 
                                             ".png" + 
                                             ">");
@@ -250,7 +250,7 @@
                                         //day 4
                                         $(".date-4").text(forecastRes.list[26].dt_txt);
 
-                                        $(".icon-d4").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-d4").html("<img src=https://openweathermap.org/img/w/" + 
                                             forecastRes.list[26].weather[0].icon + 
                                             ".png" + 
                                             ">");
@@ -268,7 +268,7 @@
                                         //day 5
                                         $(".date-5").text(forecastRes.list[34].dt_txt);
 
-                                        $(".icon-d5").html("<img src=http://openweathermap.org/img/w/" + 
+                                        $(".icon-d5").html("<img src=https://openweathermap.org/img/w/" + 
                                             forecastRes.list[34].weather[0].icon + 
                                             ".png" + 
                                             ">");
